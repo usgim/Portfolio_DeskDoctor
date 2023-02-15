@@ -65,12 +65,14 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
 
  - 좋은 결과가 나온 모델도 프로토타입 서비스를 작성하여 평가해보니 자세를 제대로 예측하지 못하는 문제가 있었습니다. 데이터를 수집한 방법(opencv, video)과 실제 데이터를 입수한 방법(web_rtc)이 달라 문제가 발생했습니다.
 
+ - 좌표가 거꾸로 지정되어 결과를 반대로 나타내던 문제가 있었습니다. 
+
 
 
  ### 해결방법
  
  - sparse_categorical_crossentrophy 자체의 문제도 존재했기 때문에, 이를 해결하기 위해 tf.keras.utils 의 to_categorical 메서드를 사용하여 원핫인코딩을 진행하고 loss func 를 categorical_crossentrophy 로 교체했습니다. 
-
+ - 라벨링 결과를 재처리하였습니다.
  - 데이터 입수 방법 자체를 교정하여 재학습시켰습니다. web_rtc 를 통해 얻은 사진 결과를 학습시킴으로서 수집방법과 모델이 학습한 환경이 달라 발생했던 문제를 해결했습니다. 이에 충분히 좋은 결과를 얻을 수 있었고, test 결과도 좋게 나왔습니다. 
 
 
@@ -90,6 +92,41 @@ accuracy:  0.99303138256073
 
 
  ## 서비스 구현
+
+- 저희는 Streamlit 를 통해 실제 동작 가능한 앱 제작까지 성공했습니다. 
+- 실제 서비스 구현은 다음과 같습니다.
+
+
+1. 먼저 항목란에서 데이터 입력란에 들어갑니다. (default 상태가 데이터 입력란이므로, 생략해도 좋습니다.)
+
+![1번 파일](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FlXAI3%2FbtrZryQflXo%2FNol5h0Q0isKOYru1NJfX41%2Fimg.png)
+
+
+2. 좌측하단의 버튼을 눌러 웹카메라를 작동시켜 데이터 수집을 시작합니다. 컴퓨터에 부착된 카메라가 여러 개일 경우, 우측 하단에 select device 버튼을 눌러 사용할 device 를 선택합니다. 이는 약간의 시간을 필요로 할 수 있습니다.
+
+![2번 파일](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FnPgSn%2FbtrZrdFB2Bd%2FDA4dxlIhV4sWFPPHxx5zk0%2Fimg.png)
+
+
+3. 데이터 수집이 끝났다면 모델 적용 버튼을 눌러 다음 화면으로 넘어갑니다. 여기서는 측정값 확인 버튼을 눌러 내가 있던 공간의 landmark(눈, 코, 입, 어깨, 팔 등)의 좌표를 확인할 수 있습니다.
+
+![3번 파일](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FcOTVKJ%2FbtrZrfQVWkJ%2FmplHIgzefliCGtQZYz3wCK%2Fimg.png)
+
+
+4. 적용 시작버튼을 누르면 인공지능이 당신의 자세를 판별하기 시작합니다. 당신의 점수가 0에 가까울수록 왼쪽에, 2에 가까울수록 오른쪽에 당신의 몸이 치우쳐져 있습니다. 더해, 중앙에서 어느 방향으로 어느 정도 더 치우쳐져 있나 확인해볼 수도 있습니다.
+
+![4번 파일](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbgjdRG%2FbtrZlYvWOeg%2FpANJ9BvCjVQLODBJ0dod51%2Fimg.png)
+
+
+5. 화면 하단에서 좌표를 추적하여 당신의 히트맵을 그립니다. 이를 통해 화상으로 내 몸이 어디 부분에 얼마만큼 있었나를 확인해볼 수 있습니다.
+
+![5번 파일](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbbMrgA%2FbtrZqTN9pdS%2FqfW94EaVVqqOXAWsciRP2k%2Fimg.png)
+
+
+6. 자세판별결과에 대하여 막대 그래프와 원형그래프 역시 같이 제공합니다. 이를 통해 내 자세가 어떻게 되어있는지 한눈에 확인할 수 있습니다. 측정한 자료 결과를 경로를 지정하여 csv의 형태로 다운로드받아볼 수도 있습니다!
+
+![6번 파일](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbnGzFm%2FbtrZryJtFtC%2FW2KLcXWtX8TtjPeSQTqvDK%2Fimg.png)
+![7번 파일](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FWrnM7%2FbtrZk9R3M0u%2F5wI6qOk4gmUkOoO15oakk0%2Fimg.png)
+
 
 
 
