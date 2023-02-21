@@ -15,7 +15,7 @@ import pandas as pd
 from streamlit_option_menu import option_menu
 
 #css 적용
-with open('C:/Users/user/DD/Page2/style.css') as f:
+with open('./style.css') as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 def main():
