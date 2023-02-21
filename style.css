@@ -1,0 +1,35 @@
+/* {
+    background-color : bisque;
+    border : 1px solid #dedede;
+    padding : 20px 20px 20px 20px;
+} */
+
+@font-face {
+    font-family: 'ChosunSm';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.1/ChosunSm.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+* { font-family: 'ChosunSm'}
+
+.block-container{
+    text-align: center;
+    margin:auto;
+    display:flex;
+    justify-content: center;
+}
+img {
+    display:block;
+    margin:auto;
+    margin-left : 20%;
+    margin-bottom : 10%;
+    /* margin-top: 10%; */
+} 
+
+/* .css-ocqkz7 e1tzin5v4{
+    margin-right:20%;
+} */
+/* .stMarkdown{
+    
+} */
