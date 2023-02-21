@@ -14,7 +14,7 @@ def app_model_attempt():
         landmark_df = st.session_state.landmark_df
     
     #모델 불러오기
-    MODEL_ROOT_DIR = "C:/Users/user/DD/Page2/"
+    MODEL_ROOT_DIR = "./"
     MODEL_NAME = "Maded_model_4.h5"
     MODEL_DIR = os.path.join(MODEL_ROOT_DIR,MODEL_NAME)
     model = keras.models.load_model(MODEL_DIR)
