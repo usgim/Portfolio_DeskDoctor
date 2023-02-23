@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import keras 
 import os
+from landmark import landmark
     
 def app_model_attempt():
     
@@ -14,7 +15,7 @@ def app_model_attempt():
         landmark_df = st.session_state.landmark_df
     
     #모델 불러오기
-    MODEL_ROOT_DIR = "./"
+    MODEL_ROOT_DIR = "C:/Users/user/desktop/cv_project/pose_tracking_project_class1/"
     MODEL_NAME = "Maded_model_4.h5"
     MODEL_DIR = os.path.join(MODEL_ROOT_DIR,MODEL_NAME)
     model = keras.models.load_model(MODEL_DIR)
@@ -29,29 +30,7 @@ def app_model_attempt():
         latest_iteration.text(f'iteration{i+1}')
         bar.progress(i+1)
         time.sleep(0.01)
-
-#     # load the model
-#     st.title("Load the Model")
-#     stream = st.file_uploader('TF.Keras model file (.h5py.zip)', type='zip')
-#     if stream is not None:
-#       myzipfile = zipfile.ZipFile(stream)
-#       with tempfile.TemporaryDirectory() as tmp_dir:
-#         myzipfile.extractall(tmp_dir)
-#         root_folder = myzipfile.namelist()[0] # e.g. "model.h5py"
-#         model_dir = os.path.join(tmp_dir, root_folder)
-#         #st.info(f'trying to load model from tmp dir {model_dir}...')
-#         model = tf.keras.models.load_model(model_dir)
-
-#     # Load data from CSV
-#     st.title("Upload your csv file.")
-#     file_path = st.file_uploader("Upload a CSV file", type="csv")
-#     if file_path is not None:
-
-    if st.sidebar.button("측정값 확인"):
-        #global landmark
-        a1 = st.empty()
-        a1.dataframe(landmark_df)
-                
+              
     if st.sidebar.button("적용 시작"):        
         #global landmark
         df = landmark_df
@@ -68,11 +47,13 @@ def app_model_attempt():
         map_dict = {0: "left", 1: "middle", 2: "right"}
         output_2 = output - 1
         if output_2 > 0:
-            bias="right"
+            bias="오른쪽"
         else:
-            bias="left"
-        st.title(f"Your Pose value is {output}. 0<=Value<=2, 0=left, 1=middle, 2=right. The value close to 1 is good.")
-        st.title(f"Your Pose is {map_dict[round(output)]}, but {round(output_2,4)} biased to {bias}.")
+            bias="왼쪽"
+        st.title(f"나의 앉은 자세 점수는 {output}입니다.")
+        st.write("점수가 1에 가까울수록 바른 앉은자세입니다.")        
+        st.title(f"나의 점수 {output}는 {round(output_2,4)}정도 {bias}으로 기울어져있음을 의미합니다.")
+
 
         df["Predictions"] = results
         pred_name = []
@@ -81,30 +62,28 @@ def app_model_attempt():
         df["Predictions_name"] = pred_name
 
         label = df["Predictions_name"].value_counts()             ## bar 차트 그리기
-        st.dataframe( df.head() )
+#         st.dataframe( df )
         st.bar_chart(label)
         #plotly pie차트
         df4 = pd.DataFrame()
         for i in range(0,33):
             df5 = df3.iloc[:,[4*i, 4*i + 1]]
             df4 = pd.concat((df4,df5),ignore_index=True,axis=1)
-        # df4 구성
-        # 이제 df4 에다가 x*width, y*height 해서 좌표 구해주면 되겠다. 
 
-        # Create a blank image to be used as the canvas for the heatmap
+        # 히트맵 구현
         canvas = np.zeros((300, 300), np.uint8)
         canvas.fill(255)
-        # Loop through the landmark data
+
         for i in range(df4.shape[0]):
             for j in range(int(df4.shape[1]/2)):
                 x, y = df4.iloc[i,[2*j, 2*j +1]]
                 x = x * 300  #denormalize
                 y = y * 300
                 if x >= 0 and x <= 300 and y >= 0 and y <= 300:
-                    # Plot a circle on the canvas using OpenCV's circle function
+                    # opencv canvas 사용
                     canvas[int(y),int(x)] += 1
 
-        # Show the heatmap
+        # 히트맵 가시화
         canvas = cv2.applyColorMap(canvas, cv2.COLORMAP_JET)
         st.image(canvas, use_column_width=True)
 
@@ -114,8 +93,8 @@ def app_model_attempt():
         fig1 = px.pie(data, values='Counts', names= data.index, title='자세 유형 분포도')
         st.plotly_chart(fig1)
 
-        # Save predictions to new CSV file
-        save_path = st.text_input("If you want to save the file, Please write the file path down.:")
-        if st.button("Save"):
+        # 경로를 입력하면 csv 파일로 저장
+        save_path = st.text_input("저장하시려면 파일이 저장될 경로와 파일 이름을 입력해주세요!.:")
+        if st.button("저장"):
             df.to_csv(f"{save_path}.csv", index=False)
-            st.success("File saved successfully!")
+            st.success("파일이 성공적으로 저장되었습니다!")

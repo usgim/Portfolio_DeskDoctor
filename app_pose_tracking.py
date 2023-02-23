@@ -47,7 +47,7 @@ def app_pose_tracking():
             row = pose_row
         except:
             pass
-            #row = np.zeros(len(landmarks))
+
         return cv2.flip(image, 1), row
         
 
@@ -71,11 +71,7 @@ def app_pose_tracking():
             row = process(img)[1]
         except :
             time.sleep(3)
-        #df = pd.DataFrame(row).T
-        #df.columns=landmarks
-        #pred = model.predict(df)
-        #data_queue.put(pred)
-        
+
         global landmark_df
         landmark_df = landmark_df.append(pd.Series(row,index=landmark_df.columns),ignore_index=True)
         return av.VideoFrame.from_ndarray(img, format="bgr24")
@@ -91,25 +87,11 @@ def app_pose_tracking():
         async_processing=True,
     )
     if webrtc_ctx.state.playing:
-        labels_placeholder_2 = st.empty()
+        check_df = pd.DataFrame({'test':['t']})
         while True:
-            labels_placeholder_2.dataframe(landmark_df)
-            st.session_state.landmark_df = landmark_df
-    #return landmark_df
-    # # 사이드바에 체크박스 : 현재 좌표에서 모델을 적용시킨 값을 즉석으로 보여주고, 데이터프레임에 어떤 값이 들어가는지 가시적으로 보여줌
-    # if st.sidebar.checkbox("Show the detected labels", value=True):
-    #     if webrtc_ctx.state.playing:
-    #         #labels_placeholder_1 = st.empty()
-    #         labels_placeholder_2 = st.empty()
-
-    #         while True:
-    #             #try:
-    #                 #result = data_queue.get(timeout=1.0)
-    #             #except queue.Empty:
-    #                 #result = None
-    #             #labels_placeholder_1.table(result)
-    #             labels_placeholder_2.dataframe(landmark_df)
-                
-    #             # session_state 에 landmark_df 값을 저장
-    #             #st.session_state.landmark_df = landmark_df
-    # # return webrtc_ctx, landmark_df
+            time.sleep(1)
+            if len(check_df) != len(landmark_df):
+                st.session_state.landmark_df = landmark_df
+                check_df = landmark_df
+            else:
+                break
