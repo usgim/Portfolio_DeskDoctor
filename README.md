@@ -24,7 +24,7 @@
 
 ## Model 구현 방법
  
- - 최초에는 CNN 모델을 사용하여 pose 를 인식한 후 Classification 할 수 있도록 구현했습니다.
+ - 최초에는 CNN 모델을 사용하여 pose 를 인식한 후 Detection 할 수 있도록 구현했습니다.
  
  - 그러나 opencv, mediapipe 를 이용하여 좌표 자료를 입수할 수 있다는 사실을 깨닫고 모델 경량화와 성능향상을 위하여 FNN을 통해 단순 Classification 을 할 수 있도록 개량했습니다. 
 
